@@ -19,8 +19,8 @@ class App extends Component {
     super(props);
 
     this.state = {
-      activeRoomId: "-LPEArDhO7odlJrFWi0B",
-      activeRoomName: "George"
+      activeRoomId: "",
+      activeRoomName: ""
     };
   }
 

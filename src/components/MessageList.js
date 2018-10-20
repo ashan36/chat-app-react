@@ -25,12 +25,12 @@ class MessageList extends Component {
   componentDidUpdate(prevProps) {
     if (this.props.activeRoomId !== prevProps.activeRoomId) {
       console.log("Updating Messages");
-      this.setState({ messages: [] });
       this.messagesRef.off('child_added', this.populateMessages);
       console.log("Querying Firebase in didUpdate");
       this.messagesRef = this.props.firebase.database().ref("rooms/" + this.props.activeRoomId + "/messages");
-      this.messagesRef.on('child_added', this.populateMessages);
+      this.setState({ messages: [] }, () => this.messagesRef.on('child_added', this.populateMessages));
     }
+
   }
 
   componentWillUnmount() {
@@ -39,14 +39,21 @@ class MessageList extends Component {
     console.log("Message List did Unmount!")
   }
 
-  populateMessages(snapshot) {
-    const message = snapshot.val();
-    message.key = snapshot.key;
-    var newMessages = this.state.messages.concat(message);
-    console.log(newMessages.map( (message) => {return ("New Message array " + message.content)}));
-    this.setState({ messages: newMessages });
-    console.log(this.state.messages.map( (message) => {return ("State message array " + message.content)}));
-  }
+  populateMessages = (function (snapshot) {
+    var newMessages = [];
+    var counter = 0;
+    return function (snapshot) {
+      var message = snapshot.val();
+      message.key = snapshot.key;
+      newMessages = newMessages.concat(message);
+      counter++;
+      console.log("adding message" + counter);
+      console.log(newMessages);
+      return this.setState({ messages: newMessages }, () => newMessages = []);
+    }
+  })();
+
+
 
   render () {
     return (
