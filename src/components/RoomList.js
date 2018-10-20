@@ -33,6 +33,15 @@ class RoomList extends Component {
     this.displayRoomDialog();
   }
 
+  selectRoom(roomKey, roomName) {
+    if (this.props.activeRoomId === roomKey) {
+      this.props.handleSelectRoom("", "");
+    }
+    else {
+      this.props.handleSelectRoom(roomKey, roomName);
+    }
+  }
+
   render() {
     return (
       <section className="room-listing">
@@ -49,7 +58,7 @@ class RoomList extends Component {
         {
           this.state.rooms.map( (room, index) => {
             return (
-              <h2 className="room-item" key={room.key}>{room.name}</h2>
+              <h2 className="room-item" key={room.key} onClick={ () => this.selectRoom(room.key, room.name)}>{room.name}</h2>
             );
           })
         }
