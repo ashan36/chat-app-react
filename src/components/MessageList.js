@@ -5,7 +5,7 @@ class MessageList extends Component {
     super(props);
 
     this.state = {
-      messages: []
+      messages: [],
     };
 
     console.log("MessageList constructor")
@@ -24,13 +24,13 @@ class MessageList extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.activeRoomId !== prevProps.activeRoomId) {
+      this.populateMessages({});
       console.log("Updating Messages");
       this.messagesRef.off('child_added', this.populateMessages);
       console.log("Querying Firebase in didUpdate");
       this.messagesRef = this.props.firebase.database().ref("rooms/" + this.props.activeRoomId + "/messages");
       this.setState({ messages: [] }, () => this.messagesRef.on('child_added', this.populateMessages));
     }
-
   }
 
   componentWillUnmount() {
@@ -43,17 +43,28 @@ class MessageList extends Component {
     var newMessages = [];
     var counter = 0;
     return function (snapshot) {
-      var message = snapshot.val();
+      try {
+        var message = snapshot.val();
+      }
+      catch(err) {
+        newMessages = [];
+        counter = 0;
+        console.log('clearing messages');
+        return;
+      }
       message.key = snapshot.key;
       newMessages = newMessages.concat(message);
       counter++;
       console.log("adding message" + counter);
       console.log(newMessages);
-      return this.setState({ messages: newMessages }, () => newMessages = []);
+      this.setMessagesState(newMessages);
+      return;
     }
   })();
 
-
+  setMessagesState(newMessages) {
+    this.setState({ messages: newMessages}, () => console.log("messages state updated"));
+  }
 
   render () {
     return (
