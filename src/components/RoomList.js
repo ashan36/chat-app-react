@@ -26,7 +26,10 @@ class RoomList extends Component {
   }
 
   createRoom(e) {
+    e.preventDefault();
     let newName = e.target.previousSibling.value;
+    newName = newName.replace(/^\s+/, "");
+    newName = newName.replace(/\s+$/, "");
     this.roomsRef.push({
       name: newName
     });
