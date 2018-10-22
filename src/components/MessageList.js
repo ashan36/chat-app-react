@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import MessageInput from './MessageInput';
 
 class MessageList extends Component {
   constructor(props) {
@@ -66,6 +67,23 @@ class MessageList extends Component {
     this.setState({ messages: newMessages}, () => console.log("messages state updated"));
   }
 
+  pushMessage(message) {
+    message = message.replace(/^\s+/, "");
+    let timeStamp = this.props.firebase.database.ServerValue.TIMESTAMP;
+    let roomId = this.props.activeRoomId;
+    this.messagesRef.push({
+      username: this.props.user.displayName,
+      content: message,
+      sentAt: timeStamp,
+      roomId: roomId
+    });
+  }
+
+  formatTimeStamp(time) {
+    var date = new Date(parseInt(time));
+    return date.toLocaleString();
+  }
+
   render () {
     return (
       <section className="message-list">
@@ -83,13 +101,14 @@ class MessageList extends Component {
                   <tr className="message-post" key={value.key}>
                     <td>{value.username}</td>
                     <td>{value.content}</td>
-                    <td>{value.sentAt}</td>
+                    <td>{this.formatTimeStamp(value.sentAt)}</td>
                   </tr>
                 )
               })
             }
           </tbody>
         </table>
+        <MessageInput pushMessage={(message) => this.pushMessage(message)} />
       </section>
     )
   }

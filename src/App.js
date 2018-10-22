@@ -51,7 +51,7 @@ class App extends Component {
           {
             (this.state.activeRoomId === "") ?
               (null) :
-              (<MessageList firebase={firebase} activeRoomId={this.state.activeRoomId} activeRoomName={this.state.activeRoomName}/>)
+              (<MessageList firebase={firebase} activeRoomId={this.state.activeRoomId} activeRoomName={this.state.activeRoomName} user={this.state.user}/>)
           }
         </main>
       </div>
